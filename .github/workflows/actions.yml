@@ -21,7 +21,7 @@ jobs:
       run: terraform init
       env:
         GOOGLE_CREDENTIALS:  ${{ secrets.GOOGLE_CREDENTIALS }}
-        TF_ACTION_WORKING_DIR: 'terraform'
+        TF_WORKSPACE: 'terraform'
         # these TF_VAR_<var_name> can be accessed on terraform by var.<var name>
         # (e.g.: TF_VAR_project can be accessed on main.tf as var.project)
         TF_VAR_project: ${{ secrets.TF_VAR_project }} 
@@ -35,7 +35,7 @@ jobs:
       run: terraform apply -auto-approve
       env:
         GOOGLE_CREDENTIALS:  ${{ secrets.GOOGLE_CREDENTIALS }}
-        TF_ACTION_WORKING_DIR: 'terraform'
+        TF_WORKSPACE: 'terraform'
         TF_VAR_project: ${{ secrets.TF_VAR_project }}
         TF_VAR_region: ${{ secrets.TF_VAR_region }}
         TF_VAR_zone: ${{ secrets.TF_VAR_zone }}
