@@ -12,7 +12,7 @@ jobs:
     steps:
 
     - name: Checkout Repo
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: setup Terraform
       uses: hashicorp/setup-terraform@v2
@@ -40,3 +40,35 @@ jobs:
         TF_VAR_project: ${{ secrets.TF_VAR_project }}
         TF_VAR_region: ${{ secrets.TF_VAR_region }}
         TF_VAR_zone: ${{ secrets.TF_VAR_zone }}
+
+  publish_app_container_to_gcp:
+    name: build container and push to GCP
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: test_flask_app
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with: 
+          credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Build Docker Image 
+        run: docker-compose up
+
+      - name: Configure Docker Client
+        run: gcloud auth configure-docker --quiet
+
+      - name: Push Docker Image to Artifact Registry
+        env:
+          GIT_TAG: v0.1.0
+        run: |-
+          docker tag $IMAGE_NAME:latest gcr.io/${{secrets.PROJECT_ID}}/$IMAGE_NAME:latest 
+          docker tag $IMAGE_NAME:latest gcr.io/${{secrets.PROJECT_ID}}/$IMAGE_NAME:$GIT_TAG
+          docker push gcr.io/${{secrets.PROJECT_ID}}/$IMAGE_NAME:latest
+          docker push gcr.io/${{secrets.PROJECT_ID}}/$IMAGE_NAME:$GIT_TAG  
