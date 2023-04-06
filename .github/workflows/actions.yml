@@ -59,7 +59,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
 
       - name: Build Docker Image 
-        run: docker-compose up
+        run: docker build -t $IMAGE_NAME:latest .
 
       - name: Configure Docker Client
         run: gcloud auth configure-docker --quiet
