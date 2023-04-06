@@ -1,12 +1,36 @@
-name: test-actions
-on: [push]
+name: Deploy Infrastructure
+
+on:
+  push:
+    branches:
+      - master
+
 jobs:
-  check-bats-version:
+  provision_infraestructure:
+    name: provision app infraestructure
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '14'
-      - run: npm install -g bats
-      - run: bats -v
+
+    - name: Checkout Repo
+      uses: actions/checkout@v1
+
+    - name: Terraform Init
+      uses: hashicorp/terraform-github-actions/init@v0.4.0
+      env:
+        GOOGLE_CREDENTIALS:  ${{ secrets.GOOGLE_CREDENTIALS }}
+        TF_ACTION_WORKING_DIR: 'terraform'
+        TF_VAR_project: ${{ secrets.TF_VAR_project }}
+        TF_VAR_region: ${{ secrets.TF_VAR_region }}
+        TF_VAR_zone: ${{ secrets.TF_VAR_zone }}
+
+    - name: Terraform Validate
+      uses: hashicorp/terraform-github-actions/validate@v0.3.7
+
+    - name: Terraform Apply
+      uses: hashicorp/terraform-github-actions/apply@v0.4.0
+      env:
+        GOOGLE_CREDENTIALS:  ${{ secrets.GOOGLE_CREDENTIALS }}
+        TF_ACTION_WORKING_DIR: 'terraform'
+        TF_VAR_project: ${{ secrets.TF_VAR_project }}
+        TF_VAR_region: ${{ secrets.TF_VAR_region }}
+        TF_VAR_zone: ${{ secrets.TF_VAR_zone }}
