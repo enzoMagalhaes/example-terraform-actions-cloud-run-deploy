@@ -6,7 +6,7 @@ on:
       - master
 
 env:
-  IMAGE_NAME: test_flask_app
+  IMAGE_NAME: test-flask-app
 
 jobs:
   provision_infraestructure:
