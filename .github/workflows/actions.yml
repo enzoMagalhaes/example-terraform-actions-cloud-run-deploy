@@ -81,4 +81,4 @@ jobs:
         uses: "google-github-actions/deploy-cloudrun@v1"
         with:
           service: "test-flask-app"
-          image: us-east1-docker.pkg.dev/${{secrets.PROJECT_ID}}/$IMAGE_FOLDER/$IMAGE_NAME:latest
+          image: us-east1-docker.pkg.dev/${{secrets.PROJECT_ID}}/${{ env.IMAGE_FOLDER }}/${{ env.IMAGE_NAME }}:latest
