@@ -29,7 +29,7 @@ jobs:
           TF_VAR_project: ${{ secrets.TF_VAR_project }}
           TF_VAR_region: ${{ secrets.TF_VAR_region }}
           TF_VAR_zone: ${{ secrets.TF_VAR_zone }}
-          TF_VAR_repository_name: $IMAGE_NAME
+          TF_VAR_repository_name: ${{ env.IMAGE_NAME }}
 
       - name: Terraform Format
         working-directory: ./terraform
@@ -43,7 +43,7 @@ jobs:
           TF_VAR_project: ${{ secrets.TF_VAR_project }}
           TF_VAR_region: ${{ secrets.TF_VAR_region }}
           TF_VAR_zone: ${{ secrets.TF_VAR_zone }}
-          TF_VAR_repository_name: $IMAGE_NAME
+          TF_VAR_repository_name: ${{ env.IMAGE_NAME }}
 
   publish_app_container_to_gcp:
     name: build container and push to GCP
