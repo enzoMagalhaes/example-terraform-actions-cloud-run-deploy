@@ -71,16 +71,28 @@ jobs:
         env:
           GIT_TAG: v0.1.0
 
-        # DEPLOYING TO ARTIFACT REGISTRY IS NOT WORKING (Permission "artifactregistry.repositories.uploadArtifacts" denied on resource "projects/***/locations/us-east1/repositories/images" (or it may not exist))
         run: |- 
           docker tag $IMAGE_NAME:latest us-east1-docker.pkg.dev/${{secrets.PROJECT_ID}}/$IMAGE_FOLDER/$IMAGE_NAME:latest 
           docker tag $IMAGE_NAME:latest us-east1-docker.pkg.dev/${{secrets.PROJECT_ID}}/$IMAGE_FOLDER/$IMAGE_NAME:$GIT_TAG
           docker push us-east1-docker.pkg.dev/${{secrets.PROJECT_ID}}/$IMAGE_FOLDER/$IMAGE_NAME:latest
           docker push us-east1-docker.pkg.dev/${{secrets.PROJECT_ID}}/$IMAGE_FOLDER/$IMAGE_NAME:$GIT_TAG
 
-        # # container registry alternative
-        # run: |-
-        #   docker tag $IMAGE_NAME:latest gcr.io/${{secrets.PROJECT_ID}}/$IMAGE_NAME:latest 
-        #   docker tag $IMAGE_NAME:latest gcr.io/${{secrets.PROJECT_ID}}/$IMAGE_NAME:$GIT_TAG
-        #   docker push gcr.io/${{secrets.PROJECT_ID}}/$IMAGE_NAME:latest
-        #   docker push gcr.io/${{secrets.PROJECT_ID}}/$IMAGE_NAME:$GIT_TAG
+  deploy_container_to_cloud_run:
+    name: deploy container to cloud run
+    needs: publish_app_container_to_gcp
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: "${{ secrets.GOOGLE_CREDENTIALS }}"
+
+      - name: Deploy image to Cloud Run
+        uses: 'google-github-actions/deploy-cloudrun@v1'
+        with:
+          service: 'test-flask-app'
+          image: 'us-east1-docker.pkg.dev/${{secrets.PROJECT_ID}}/$IMAGE_FOLDER/$IMAGE_NAME:latest'
+
+      - name: 'Use output'
+        run: 'curl "${{ steps.deploy.outputs.url }}"'
