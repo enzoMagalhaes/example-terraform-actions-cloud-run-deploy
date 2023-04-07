@@ -65,7 +65,7 @@ jobs:
         run: docker build -t $IMAGE_NAME:latest .
 
       - name: Configure Docker Client
-        run: gcloud auth configure-docker --quiet
+        run: gcloud auth configure-docker us-east1-docker.pkg.dev
 
       - name: Push Docker Image to Artifact Registry
         env:
