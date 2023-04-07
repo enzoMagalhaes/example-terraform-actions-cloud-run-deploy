@@ -13,3 +13,8 @@ variable "zone" {
   type        = string
   description = "this variable contains the zone"
 }
+
+variable "repository_name" {
+  type        = string
+  description = "this variable contains the repository name"
+}
