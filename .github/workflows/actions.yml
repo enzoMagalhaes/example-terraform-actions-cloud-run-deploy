@@ -7,6 +7,7 @@ on:
 
 env:
   IMAGE_NAME: test-flask-app
+  IMAGE_FOLDER: images
 
 jobs:
   provision_infraestructure:
@@ -29,7 +30,7 @@ jobs:
           TF_VAR_project: ${{ secrets.TF_VAR_project }}
           TF_VAR_region: ${{ secrets.TF_VAR_region }}
           TF_VAR_zone: ${{ secrets.TF_VAR_zone }}
-          TF_VAR_repository_name: ${{ env.IMAGE_NAME }}
+          TF_VAR_repository_name: ${{ env.IMAGE_FOLDER }}
 
       - name: Terraform Format
         working-directory: ./terraform
@@ -43,7 +44,7 @@ jobs:
           TF_VAR_project: ${{ secrets.TF_VAR_project }}
           TF_VAR_region: ${{ secrets.TF_VAR_region }}
           TF_VAR_zone: ${{ secrets.TF_VAR_zone }}
-          TF_VAR_repository_name: ${{ env.IMAGE_NAME }}
+          TF_VAR_repository_name: ${{ env.IMAGE_FOLDER }}
 
   publish_app_container_to_gcp:
     name: build container and push to GCP
@@ -70,7 +71,7 @@ jobs:
         env:
           GIT_TAG: v0.1.0
         run: |-
-          docker tag $IMAGE_NAME:latest us-east1-docker.pkg.dev/${{secrets.PROJECT_ID}}/$IMAGE_NAME:latest 
-          docker tag $IMAGE_NAME:latest us-east1-docker.pkg.dev/${{secrets.PROJECT_ID}}/$IMAGE_NAME:$GIT_TAG
-          docker push us-east1-docker.pkg.dev/${{secrets.PROJECT_ID}}/$IMAGE_NAME:latest
-          docker push us-east1-docker.pkg.dev/${{secrets.PROJECT_ID}}/$IMAGE_NAME:$GIT_TAG
+          docker tag $IMAGE_NAME:latest us-east1-docker.pkg.dev/${{secrets.PROJECT_ID}}/$IMAGE_FOLDER/$IMAGE_NAME:latest 
+          docker tag $IMAGE_NAME:latest us-east1-docker.pkg.dev/${{secrets.PROJECT_ID}}/$IMAGE_FOLDER/$IMAGE_NAME:$GIT_TAG
+          docker push us-east1-docker.pkg.dev/${{secrets.PROJECT_ID}}/$IMAGE_FOLDER/$IMAGE_NAME:latest
+          docker push us-east1-docker.pkg.dev/${{secrets.PROJECT_ID}}/$IMAGE_FOLDER/$IMAGE_NAME:$GIT_TAG
