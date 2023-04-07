@@ -77,22 +77,8 @@ jobs:
           docker push us-east1-docker.pkg.dev/${{secrets.PROJECT_ID}}/$IMAGE_FOLDER/$IMAGE_NAME:latest
           docker push us-east1-docker.pkg.dev/${{secrets.PROJECT_ID}}/$IMAGE_FOLDER/$IMAGE_NAME:$GIT_TAG
 
-  deploy_container_to_cloud_run:
-    name: deploy container to cloud run
-    needs: publish_app_container_to_gcp
-    runs-on: ubuntu-latest
-    steps:
-
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: "${{ secrets.GOOGLE_CREDENTIALS }}"
-
       - name: Deploy image to Cloud Run
         uses: 'google-github-actions/deploy-cloudrun@v1'
         with:
           service: 'test-flask-app'
-          image: 'us-east1-docker.pkg.dev/${{secrets.PROJECT_ID}}/$IMAGE_FOLDER/$IMAGE_NAME:latest'
-
-      - name: 'Use output'
-        run: 'curl "${{ steps.deploy.outputs.url }}"'
+          image: 'us-east1-docker.pkg.dev/${{secrets.PROJECT_ID}}/$IMAGE_FOLDER/$IMAGE_NAME:latest --region us-east1'
